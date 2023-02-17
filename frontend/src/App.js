@@ -1,23 +1,32 @@
 import logo from './logo.svg';
 import './App.css';
 
+function Node({i, text, metadata, selected}) {
+  return (
+    <div key={i} className={"node " + metadata.type + "-class" + (selected ? "-selected" : "")}>
+      {text}
+    </div>
+  );
+}
+
 function App() {
+  let data = [
+    {text: "this is the first message in the data", metadata: {type: "default"}},
+    {text: "this is the second message in the data", metadata: {type: "default"}},
+    {text: "...", metadata: {type: "meristem"}}
+  ]
+
+  let selected_i = -1
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="header"></div>
+      {data.map((data, i) => Node({
+        i: i, 
+        text: data.text, 
+        metadata: data.metadata,
+        selected: i == selected_i
+      }))}
     </div>
   );
 }
