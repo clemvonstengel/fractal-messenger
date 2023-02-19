@@ -17,11 +17,11 @@
   color: white;
 }
 
-.default-class {
+.bark-class {
   background-color:#2D2D40;
 } 
 
-.default-class-selected {
+.bark-class-selected {
   background-color: rgb(163, 201, 230);
   color: black;
 }
