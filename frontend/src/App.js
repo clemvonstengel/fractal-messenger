@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import socketIOClient from "socket.io-client";
 
 import logo from './logo.svg';
@@ -15,13 +15,20 @@ function Text({i, j, comp_data, command_fn}) {
   return <div key={j}>{comp_data.text}</div>
 }
 
-function Text_Entry({i, j, command_fn}) {
-  return <div key={j}>...</div>
+function Text_Entry({i, j, comp_data, command_fn}) {
+  return (
+    <div key={j}>
+      <input placeholder={"..."}></input>
+      <button onClick={() => {
+        command_fn(i, "bark", "abd") //send input text!
+      }}>ENTER</button>
+    </div>
+  );
 }
 
 function Node({i, data, selected, command_fn}) {
   return (
-    <div 
+    <div
       key={i} 
       className={"node " + data.type + "-class" + (selected ? "-selected" : "")}
       onClick={() => command_fn(i, "select")}
@@ -37,9 +44,6 @@ function App() {
   const [socket, set_socket] = useState(null)
   const [data, set_data] = useState([])
   const [selected_i, set_selected_i] = useState(-1)
-
-
-
 
   useEffect(() => {
     set_data([
@@ -60,10 +64,12 @@ function App() {
     }
   }, [socket])
 
-  let command_fn = (i, command) => {
+  let command_fn = (i, command, data) => {
+    console.log(command)
     if (command == "select") {
-      console.log(command)
       set_selected_i(i)
+    } else if (command == "bark") {
+      socket.emit("bark", data)
     }
   }
 
@@ -71,7 +77,7 @@ function App() {
     <div className="App">
       <div className="header"></div>
       {data.map((data, i) => Node({
-        i: i, 
+        i: i,
         data: data,
         selected: i == selected_i,
         command_fn: command_fn

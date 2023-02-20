@@ -16,9 +16,9 @@ Session(app)
 socketio = SocketIO(app, manage_session=False, cors_allowed_origins="*") 
 
 data = [
-    {"id": 0, "type": "bark", "comp_data": {"text": "data entry numba 1"}},
-    {"id": 1, "type": "bark", "comp_data": {"text": "data entry numba 2"}},
-    {"id": 2, "type": "meristem", "comp_data": {}}
+    {"id": 1, "type": "bark", "comp_data": {"text": "data entry numba 1"}},
+    {"id": 2, "type": "bark", "comp_data": {"text": "data entry numba 2"}},
+    {"id": 0, "type": "meristem", "comp_data": {}}
 ]
 
 @app.route("/")
@@ -36,7 +36,9 @@ def new_connection(_):
     
     socketio.emit("load", data)
 
-
-
-
-
+@socketio.on("bark")
+def bark(msg):
+    print("yeah")
+    data.append(data[-1])
+    data[-2] = {"id": len(data), "type": "bark", "comp_data": {"text": msg}}
+    socketio.emit("load", data)
