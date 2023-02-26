@@ -3,7 +3,7 @@ import socketIOClient from "socket.io-client";
 
 import './App.css';
 
-const base_url = ""//http://164.90.222.205/"
+const base_url = "http://164.90.222.205/"
 
 const type_comps = {
   bark: [Text],
