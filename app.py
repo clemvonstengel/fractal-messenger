@@ -16,9 +16,12 @@ Session(app)
 socketio = SocketIO(app, manage_session=False, cors_allowed_origins="*") 
 
 data = [
-    {"id": 1, "type": "bark", "comp_data": {"text": "data entry numba 1"}},
-    {"id": 2, "type": "bark", "comp_data": {"text": "data entry numba 2"}},
-    {"id": 0, "type": "meristem", "comp_data": {}}
+    {"id": 0, "level": 0, "parent_id": 0, "type": "root", "comp_data": {}},
+    {"id": 1, "level": 1, "parent_id": 0, "type": "branch", "comp_data": {"text": "data entry numba 1"}},
+    {"id": 2, "level": 1, "parent_id": 0, "type": "bark", "comp_data": {"text": "data entry numba 2"}},
+    {"id": 4, "level": 2, "parent_id": 2, "type": "bark", "comp_data": {"text": "data entry numba 3"}},
+    {"id": 5, "level": 2, "parent_id": 2, "type": "meristem", "comp_data": {}},
+    {"id": 3, "level": 1, "parent_id": 0, "type": "meristem", "comp_data": {}}
 ]
 
 @app.route("/")
@@ -39,6 +42,25 @@ def new_connection(_):
 @socketio.on("bark")
 def bark(msg):
     print("yeah")
-    data.append(data[-1])
-    data[-2] = {"id": len(data), "type": "bark", "comp_data": {"text": msg}}
+    #todo some kind of stack for handling multiple incoming messages? - only if needed
+
+    index = -1
+    parent_id = 0
+    level = 0
+    for i, datum in enumerate(data):
+        if msg["id"] == datum["id"]: #found the meristem
+            index = i
+            level = datum["level"]
+            parent_id = datum["parent_id"]
+            break
+    if index == -1:
+        print("couldn't find meristem")
+        return
+    data.insert(index, {
+        "id": len(data), 
+        "level": level, 
+        "parent_id": parent_id,
+        "type": "bark", 
+        "comp_data": msg["text"]
+    })
     socketio.emit("load", data)
